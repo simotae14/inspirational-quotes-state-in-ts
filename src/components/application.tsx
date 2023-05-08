@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import Quotes from './quotes';
+import { useEffect, useState } from 'react';
 import InspirationalQuote from './quote';
+import Quotes from './quotes';
 
 export type Quote = {
   id: number;
@@ -8,35 +8,33 @@ export type Quote = {
   source?: string;
 };
 
-export const fetchRandomQuote = async () => {
-  const response = await fetch(`/api/quotes/random`);
-  return response.json();
-};
-
-export const fetchQuotes = async (count: number) => {
-  const response = await fetch(`/api/quotes?limit=${count}`);
-  return response.json();
-};
-
 const Application = () => {
   const [quotes, setQuotes] = useState<Quote[]>([]);
+  const [count, setCount] = useState(10);
+
+  const fetchPosts = (count: number) => {
+    fetch(`/api/quotes?limit=${count}`)
+      .then((res) => res.json())
+      .then((quotes) => setQuotes(quotes));
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => fetchPosts(count), []);
 
   return (
-    <main className="w-full max-w-2xl py-16 mx-auto">
+    <main className="w-full max-w-2xl mx-auto">
       <Quotes
-        setQuotes={setQuotes}
+        count={count}
+        onChange={(e) => setCount(+e.target.value)}
+        onSubmit={() => fetchPosts(count)}
       >
-        {
-          quotes.map((quote) => {
-            return (
-              <InspirationalQuote 
-                key={quote.id} 
-                content={quote.content} 
-                source={quote.source} 
-              />
-            );
-          })
-        }
+        {quotes.map((quote) => (
+          <InspirationalQuote
+            key={quote.id}
+            content={quote.content}
+            source={quote.source}
+          />
+        ))}
       </Quotes>
     </main>
   );
