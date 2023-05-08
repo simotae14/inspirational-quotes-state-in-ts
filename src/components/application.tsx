@@ -20,13 +20,11 @@ export const fetchQuotes = async (count: number) => {
 
 const Application = () => {
   const [quotes, setQuotes] = useState<Quote[]>([]);
-  const [count, setCount] = useState(10);
 
   return (
     <main className="w-full max-w-2xl py-16 mx-auto">
       <Quotes
-        count={count}
-        onSubmit={() => fetchQuotes(count).then(setQuotes)}
+        setQuotes={setQuotes}
       >
         {
           quotes.map((quote) => {
